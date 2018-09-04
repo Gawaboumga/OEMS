@@ -1,0 +1,34 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<form action="" method="get">
+			<div class="row uniform">
+				<div class="align-center 12u$">
+				{% csrf_token %}
+				{{ form }}
+				<input type="submit" value="Submit">
+				</div>
+			</div>
+		</form>
+
+		<div class="table-wrapper">
+			<table>
+				{% for mathematical_object in mathematical_objects %}
+					<tr>
+						<td>{{ mathematical_object.pk }}</td>
+						<td><a href="{% url 'front:mathematical_object' mathematical_object.pk %}">
+							\ ( {{ mathematical_object.latex }} \)
+						</a></td>
+					</tr>
+				{% empty %}
+					Sorry, no mathematical objects available.
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

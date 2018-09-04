@@ -1,0 +1,34 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<form action="" method="get">
+			<div class="row uniform">
+				<div class="align-center 12u$">
+				{% csrf_token %}
+				{{ form }}
+				<input type="submit" value="Submit">
+				</div>
+			</div>
+		</form>
+
+		<div class="table-wrapper">
+			<table>
+				{% for name in names %}
+					<tr>
+						<td>{{ name.pk }}</td>
+						<td><a href="{% url 'front:name' name.pk %}">
+							{{ name.name }}
+						</a></td>
+					</tr>
+				{% empty %}
+					Sorry, no names available.
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

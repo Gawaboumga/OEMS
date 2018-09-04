@@ -1,0 +1,10 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+<section id="main" class="wrapper">
+	<div class="inner">
+		<p>Logged out!</p>
+		<a href="{% url 'login'%}">Click here to login again.</a>
+	</div>
+</section>
+{% endblock %}

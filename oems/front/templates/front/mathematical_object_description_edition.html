@@ -1,0 +1,22 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Submit">
+        </form>
+
+        {% if form.subject.errors %}
+            <ol>
+            {% for error in form.subject.errors %}
+                <li><strong>{{ error|escape }}</strong></li>
+            {% endfor %}
+            </ol>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

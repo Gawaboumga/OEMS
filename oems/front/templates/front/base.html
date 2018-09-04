@@ -1,0 +1,76 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>OEMS</title>
+        <!-- Meta -->
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="description" content="Online Encyclopedia of Mathematical Series">
+        <meta name="author" content="Youri Hubaut">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- Template CSS -->
+        <link rel="stylesheet" href="{% static 'front/assets/css/main.css' %}"/>
+
+        <!---->
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                tex2jax: {
+                    inlineMath: [["$","$"],["\\(","\\)"]]
+                }
+            });
+        </script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML"></script>
+        <!---->
+    </head>
+    <body class="subpage">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <nav id="nav">
+                    <a href="{% url 'front:index' %}">Home</a>
+                    <a href="{% url 'front:mathematical_objects' %}">Objects</a>
+                    <a href="{% url 'front:functions' %}">Functions</a>
+                    <a href="{% url 'front:names' %}">Names</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'front:modifications' %}">Modifications</a>
+                        <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+                    {% endif %}
+                </nav>
+                <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+            </div>
+        </header>
+
+        <div>
+            {% block content %}{% endblock %}
+
+            {% block pagination %}
+                {% if is_paginated %}
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if page_obj.has_previous %}
+                                <a href="{{ request.path }}?page=1">&laquo; first</a>
+                                <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                            </span>
+
+                            {% if page_obj.has_next %}
+                                <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+                                <a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+
+            {% endblock %}
+        </div>
+
+    </body>
+</html>

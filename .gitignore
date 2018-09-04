@@ -102,3 +102,15 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+## HIDDEN FILES
+/oems/oems/secrets.py
+
+## Ignore
+.idea/
+oems/front/static/front/elements.html
+oems/front/static/front/generic.html
+oems/front/static/front/index.html
+oems/test_media_root/
+oems/htmlcov/
+.coverage

@@ -1,0 +1,24 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<div class="table-wrapper">
+			<table>
+				{% for modification in modifications %}
+					<tr>
+						<td>{{ function.pk }}</td>
+						<td><a href="{% url 'front:modification' modification.pk %}">
+							{{ modification.date_created }}
+						</a></td>
+					</tr>
+				{% empty %}
+					Sorry, no modifications available.
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

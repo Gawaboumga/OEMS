@@ -1,0 +1,38 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section class="wrapper">
+	<div class="inner">
+		<header class="align-center">
+			From user: {{ modification.user.username }} for: {{ modification.mathematical_object.pk }}
+		</header>
+
+		<div class="row">
+			<section class="12u 12u$(medium)">
+				<h2>Old content:</h2>
+				<p>{{ modification.mathematical_object.get_content }}</p>
+			</section>
+		</div>
+
+		<div class="row">
+			<section class="12u 12u$(medium)">
+				<h2>New content:</h2>
+				<p>{{ modification.get_content }}</p>
+			</section>
+		</div>
+
+		<div class="row">
+			<section class="12u 12u$(medium)">
+				<form action="" method="post">
+					{% csrf_token %}
+					{{ form_accept }}
+					<input type="submit" name="accept_modification" value="Accept" />
+					<input type="submit" name="reject_modification" value="Reject" />
+				</form>
+			</section>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<header class="align-center">
+			<h2>Function: \( {{ function.function }} \)</h2>
+		</header>
+
+		<div class="table-wrapper">
+			<table>
+				{% for mathematical_object in function.mathematicalobject_set.all %}
+					<tr>
+						<td>{{ mathematical_object.pk }}</td>
+						<td><a href="{% url 'front:mathematical_object' mathematical_object.pk %}">
+							\( {{ mathematical_object.latex }} \)
+						</a></td>
+					</tr>
+				{% empty %}
+					Sorry, no mathematical objects related.
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</section>
+
+{% endblock %}
