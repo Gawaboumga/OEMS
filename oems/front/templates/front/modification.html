@@ -2,33 +2,47 @@
 
 {% block content %}
 
-<section class="wrapper">
+<div class="wrapper">
 	<div class="inner">
 		<header class="align-center">
-			From user: {{ modification.user.username }} for: {{ modification.mathematical_object.pk }}
+			<h2>From user: {{ modification.user }} for mathematical object: <a href="{% url 'front:mathematical_object' modification.mathematical_object.pk %}">{{ modification.mathematical_object.pk }}</a></h2>
 		</header>
 
 		<div class="row">
-			<section class="12u 12u$(medium)">
+			<section class="12u">
 				<h2>Old content:</h2>
-				<p>{{ modification.mathematical_object.get_content }}</p>
+				{% if modification.mathematical_object.get_content %}
+					<div class="box">
+						{{ modification.mathematical_object.get_content }}
+					</div>
+				{% else %}
+					<p>Content was empty.</p>
+				{% endif %}
 			</section>
 		</div>
 
 		<div class="row">
-			<section class="12u 12u$(medium)">
+			<section class="12u">
 				<h2>New content:</h2>
-				<p>{{ modification.get_content }}</p>
+				<div class="box">
+					{{ modification.get_content }}
+				</div>
 			</section>
 		</div>
 
 		<div class="row">
-			<section class="12u 12u$(medium)">
+			<section class="12u">
 				<form action="" method="post">
 					{% csrf_token %}
 					{{ form_accept }}
-					<input type="submit" name="accept_modification" value="Accept" />
-					<input type="submit" name="reject_modification" value="Reject" />
+					<div class="align-right">
+						{% if perms.api.delete_modification %}
+							<input type="submit" name="accept_modification" value="Accept" />
+							<input type="submit" name="reject_modification" value="Reject" />
+						{% else %}
+							<input type="submit" name="reject_modification" value="Delete" />
+						{% endif %}
+					</div>
 				</form>
 			</section>
 		</div>

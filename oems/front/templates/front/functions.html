@@ -6,27 +6,43 @@
 	<div class="inner">
 		<form action="" method="get">
 			<div class="row uniform">
-				<div class="align-center 12u$">
-				{% csrf_token %}
-				{{ form }}
-				<input type="submit" value="Submit">
+				<div class="2u"></div>
+				<div class="8u align-center">
+					{{ form.as_p }}
+					<ul class="actions">
+						<li><input type="submit" value="Search" class="button special" /></li>
+					</ul>
 				</div>
+				<div class="2u"></div>
 			</div>
 		</form>
 
+		<header>
+			<h3>List of functions:</h3>
+		</header>
+
 		<div class="table-wrapper">
+			{% if function_list %}
 			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Function name</th>
+					</tr>
+				</thead>
+
+				<tbody>
 				{% for function in function_list %}
 					<tr>
-						<td>{{ function.pk }}</td>
-						<td><a href="{% url 'front:function' function.pk %}">
-							\( {{ function.function }} \)
-						</a></td>
+						<td><a href="{% url 'front:function' function.pk %}">{{ function.pk }}</a></td>
+						<td>\( {{ function.function }} \)</td>
 					</tr>
-				{% empty %}
-					Sorry, no functions available.
 				{% endfor %}
+				</tbody>
 			</table>
+			{% else %}
+				Sorry, no functions available.
+			{% endif %}
 		</div>
 	</div>
 </section>

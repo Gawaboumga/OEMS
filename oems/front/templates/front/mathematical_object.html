@@ -4,7 +4,12 @@
 
 <section id="main" class="wrapper">
 	<div class="inner">
-		<a href="{% url 'front:mathematical_object_edition' mathematical_object.pk %}" class="button special">Edit</a>
+		<div class="align-right">
+			{% if perms.api.change_mathematicalobject %}
+				<a href="{% url 'front:mathematical_object_edition' mathematical_object.pk %}" class="button special">Edit info</a>
+			{% endif %}
+		</div>
+
 		<header class="align-center">
 			{% if mathematical_object.type == 'S' %}
 				<h2>Series #{{ mathematical_object.id }}</h2>
@@ -16,40 +21,65 @@
 
 		{% if mathematical_object.names %}
 		<div class="row">
-			{% for name in mathematical_object.names.all %}
-				<a href="{% url 'front:name' name.id %}">{{name.name}}</a>
-				{% if not forloop.last %}, {% endif %}
-			{% endfor %}
+			<div class="12u">
+				<p>
+					Associated names:
+					{% for name in mathematical_object.names.all %}
+						<a href="{% url 'front:name' name.id %}">{{ name.name }}</a>
+						{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</p>
+			</div>
 		</div>
 		{% endif %}
 
 		{% if mathematical_object.functions %}
 		<div class="row">
-			{% for function in mathematical_object.functions.all %}
-				<a href="{% url 'front:function' function.id %}">\( {{function.function}} \)</a>
-				{% if not forloop.last %}, {% endif %}
-			{% endfor %}
+			<div class="12u">
+				<p>
+					Associated functions:
+					{% for function in mathematical_object.functions.all %}
+						<a href="{% url 'front:function' function.id %}">\( {{function.function}} \)</a>
+						{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</p>
+			</div>
 		</div>
 		{% endif %}
 
 		{% if mathematical_object.related %}
 		<div class="row">
-			{% for related_object in mathematical_object.related.all %}
-				<a href="{% url 'front:mathematical_object' related_object.id %}">\( {{related_object.latex}} \)</a>
-				{% if not forloop.last %}, {% endif %}
-			{% endfor %}
+			<div class="12u">
+				<p>
+					Related objects:
+					{% for related_object in mathematical_object.related.all %}
+						<a href="{% url 'front:mathematical_object' related_object.id %}">\( {{related_object.latex}} \)</a>
+						{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</p>
+			</div>
 		</div>
 		{% endif %}
 
+
 		{% if mathematical_object.description %}
-			<div class="box">
-				{{ mathematical_object.get_content }}
+		<div class="row">
+			<div class="12u">
+				<div class="box">
+					{{ mathematical_object.get_content }}
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+
+		{% if user.is_authenticated %}
+			<div class="align-right">
+				<a href="{% url 'front:mathematical_object_description_edition' mathematical_object.pk %}" class="button special">Edit description</a>
 			</div>
 		{% endif %}
 
 		<div class="row">
-			<a href="{% url 'front:mathematical_object_description_edition' mathematical_object.pk %}" class="button special">Edit</a>
-
 			Created on: {{ mathematical_object.date_created }}. Last update: {{ mathematical_object.date_updated }}
 		</div>
 	</div>

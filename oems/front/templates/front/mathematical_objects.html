@@ -6,27 +6,49 @@
 	<div class="inner">
 		<form action="" method="get">
 			<div class="row uniform">
-				<div class="align-center 12u$">
-				{% csrf_token %}
-				{{ form }}
-				<input type="submit" value="Submit">
+				<div class="2u"></div>
+				<div class="8u align-center">
+					{{ form.as_p }}
+					<ul class="actions">
+						<li><input type="submit" value="Search" class="button special" /></li>
+					</ul>
 				</div>
+				<div class="2u"></div>
 			</div>
 		</form>
 
+		<header>
+			<h3>List of mathematical objects:</h3>
+		</header>
+
 		<div class="table-wrapper">
+			{% if mathematical_objects %}
 			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Expression</th>
+					</tr>
+				</thead>
+
+				<tbody>
 				{% for mathematical_object in mathematical_objects %}
 					<tr>
-						<td>{{ mathematical_object.pk }}</td>
-						<td><a href="{% url 'front:mathematical_object' mathematical_object.pk %}">
-							\ ( {{ mathematical_object.latex }} \)
-						</a></td>
+						<td><a href="{% url 'front:mathematical_object' mathematical_object.pk %}">{{ mathematical_object.pk }}</a></td>
+						<td>\( {{ mathematical_object.latex }} \)</td>
 					</tr>
-				{% empty %}
-					Sorry, no mathematical objects available.
 				{% endfor %}
+				</tbody>
 			</table>
+			{% else %}
+				Sorry, no mathematical objects available.
+			{% endif %}
+		</div>
+
+		<div class="align-right">
+			{% if user.is_authenticated and perms.api.add_mathematicalobject %}
+				<a href="{% url 'front:mathematical_object_creation' %}" class="button">Add</a>
+			{% endif %}
 		</div>
 	</div>
 </section>

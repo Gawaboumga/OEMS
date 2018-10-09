@@ -6,27 +6,43 @@
 	<div class="inner">
 		<form action="" method="get">
 			<div class="row uniform">
-				<div class="align-center 12u$">
-				{% csrf_token %}
-				{{ form }}
-				<input type="submit" value="Submit">
+				<div class="2u"></div>
+				<div class="8u align-center">
+					{{ form.as_p }}
+					<ul class="actions">
+						<li><input type="submit" value="Search" class="button special" /></li>
+					</ul>
 				</div>
+				<div class="2u"></div>
 			</div>
 		</form>
 
+		<header>
+			<h3>List of names:</h3>
+		</header>
+
 		<div class="table-wrapper">
+			{% if names %}
 			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+					</tr>
+				</thead>
+
+				<tbody>
 				{% for name in names %}
 					<tr>
-						<td>{{ name.pk }}</td>
-						<td><a href="{% url 'front:name' name.pk %}">
-							{{ name.name }}
-						</a></td>
+						<td><a href="{% url 'front:name' name.pk %}">{{ name.pk }}</a></td>
+						<td>{{ name.name }}</td>
 					</tr>
-				{% empty %}
-					Sorry, no names available.
 				{% endfor %}
+				</tbody>
 			</table>
+			{% else %}
+				Sorry, no names available.
+			{% endif %}
 		</div>
 	</div>
 </section>

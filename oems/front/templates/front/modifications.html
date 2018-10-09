@@ -4,19 +4,34 @@
 
 <section id="main" class="wrapper">
 	<div class="inner">
+		<header>
+			<h3>List of modifications:</h3>
+		</header>
+
 		<div class="table-wrapper">
+			{% if modifications %}
 			<table>
-				{% for modification in modifications %}
+				<thead>
 					<tr>
-						<td>{{ function.pk }}</td>
-						<td><a href="{% url 'front:modification' modification.pk %}">
-							{{ modification.date_created }}
-						</a></td>
+						<th>ID</th>
+						<th>Created on:</th>
+						<th>By user:</th>
 					</tr>
-				{% empty %}
-					Sorry, no modifications available.
+				</thead>
+
+				<tbody>
+				{% for modification in modifications %}
+				<tr>
+					<td><a href="{% url 'front:modification' modification.pk %}">{{ modification.pk }}</a></td>
+					<td>{{ modification.date_created }}</td>
+					<td>{{ modification.user }}</td>
+				</tr>
 				{% endfor %}
+				</tbody>
 			</table>
+			{% else %}
+				Sorry, no modifications available.
+			{% endif %}
 		</div>
 	</div>
 </section>
