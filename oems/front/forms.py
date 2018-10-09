@@ -1,9 +1,10 @@
 from django import forms
 from django.core.files.base import ContentFile
+
 from api import models
+from front import widgets
 from dal import autocomplete
 from pagedown.widgets import PagedownWidget
-from front import widgets
 
 
 class QueryForm(forms.Form):
@@ -52,3 +53,9 @@ class ModificationForm(forms.Form):
             new_description_file = ContentFile(new_description)
             new_description_instance.new_description.save(str(new_description_instance.pk), new_description_file, save=True)
         return new_description_instance
+
+
+class PropositionForm(forms.ModelForm):
+    class Meta:
+        model = models.Proposition
+        fields = ('content', )

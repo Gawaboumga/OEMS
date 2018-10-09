@@ -1,8 +1,11 @@
 from rest_framework import status
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from api import models
 from front import forms, views
 
+from enum import Enum, auto
 import os.path
 import random
 import re
@@ -31,8 +34,11 @@ def create_function(self, object_pk=None, function_name=None):
     return models.Function.objects.get(pk=response.data['id'])
 
 
-def create_mathematical_object(self, with_function=False, with_name=False, description=None):
-    representation = 'create_mathematical_object' + get_random_characters()
+def create_mathematical_object(self, with_function=False, with_name=False, with_latex=None, description=None):
+    representation = 'cmathobj' + get_random_characters()
+    if with_latex:
+        representation = with_latex
+
     type = 'S'
 
     data = {
@@ -98,13 +104,53 @@ def create_name(self, object_pk=None, name=None):
     return models.Name.objects.get(pk=response.data['id'])
 
 
+def create_proposition(self, by_user, content: str=None):
+    if content is None:
+        content = get_random_characters()
+
+    return models.Proposition.objects.create(
+        user=by_user,
+        content=content
+    )
+
+
 def is_file(file_path):
     return os.path.isfile(file_path)
 
 
-def login(self):
+class UserType(Enum):
+    STAFF = auto()
+    USER = auto()
+    VISITOR = auto()
+
+
+def log_as(self, user_type: UserType):
     name = get_random_characters()
     password = get_random_characters()
-    user = models.User.objects.create_user(name, 'test@test.com', password)
-    self.client.login(username=name, password=password)
-    return user
+
+    if user_type == UserType.STAFF:
+        user = models.User.objects.create_user(name, 'test@test.com', password)
+
+        add_mathematical_object = Permission.objects.get(codename='add_mathematicalobject')
+        change_mathematical_object = Permission.objects.get(codename='change_mathematicalobject')
+        delete_mathematical_object = Permission.objects.get(codename='delete_mathematicalobject')
+
+        add_modification = Permission.objects.get(codename='add_modification')
+        change_modification = Permission.objects.get(codename='change_modification')
+        delete_modification = Permission.objects.get(codename='delete_modification')
+
+        delete_proposition = Permission.objects.get(codename='delete_proposition')
+
+        user.user_permissions.add(add_mathematical_object, change_mathematical_object, delete_mathematical_object,
+                                  add_modification, change_modification, delete_modification, delete_proposition)
+        user.save()
+
+        self.client.login(username=name, password=password)
+        return user
+    elif user_type == UserType.USER:
+        user = models.User.objects.create_user(name, 'test@test.com', password)
+        self.client.login(username=name, password=password)
+        return user
+    elif user_type == UserType.VISITOR:
+        self.client.logout()
+        return None

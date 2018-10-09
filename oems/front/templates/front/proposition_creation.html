@@ -1,0 +1,25 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section class="wrapper">
+	<div class="inner">
+		<header class="align-center">
+			Proposition or remarks
+		</header>
+
+		<div class="row">
+			<section class="12u">
+				<form action="" method="post">
+					{% csrf_token %}
+					{{ form.as_p }}
+					<div class="align-right">
+                		<input type="submit" value="Send">
+            		</div>
+				</form>
+			</section>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

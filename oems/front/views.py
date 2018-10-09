@@ -1,16 +1,11 @@
-from django.shortcuts import render
-
-from django.http import HttpResponse
-from django.urls import reverse
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.contrib.auth.decorators import login_required
 
-from api import models
+from api import models, LatexFinder
 from front import forms
-from django.shortcuts import get_object_or_404, redirect, HttpResponseRedirect
 
 
 PAGINATION_SIZE = 25
@@ -161,3 +156,44 @@ class NameDetailView(generic.DetailView):
     model = models.Name
     template_name = 'front/name.html'
     context_object_name = 'name'
+
+
+class PropositionListView(PermissionRequiredMixin, generic.ListView):
+    model = models.Proposition
+    ordering = 'date_created'
+    template_name = 'front/propositions.html'
+    context_object_name = 'propositions'
+    permission_required = ('api.delete_proposition', )
+    paginate_by = PAGINATION_SIZE
+
+
+@login_required
+def create_proposition(request):
+    if request.method == 'POST':
+        form = forms.PropositionForm(request.POST)
+        if form.is_valid():
+            proposition = form.save(commit=False)
+            proposition.user = request.user
+            proposition.save()
+            return redirect('front:proposition', kwargs={'pk': proposition.pk})
+    else:
+        form = forms.PropositionForm()
+
+    return render(request, 'front/proposition_creation.html', {'form': form})
+
+
+@login_required
+def proposition_detail(request, pk):
+    proposition = get_object_or_404(models.Proposition, pk=pk)
+
+    if not (request.user.has_perm('api.delete_proposition') or request.user == proposition.user):
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
+        proposition.delete()
+        if request.user.has_perm('api.delete_proposition'):
+            return redirect('front:propositions')
+        else:
+            return redirect('front:index')
+    else:
+        return render(request, 'front/proposition.html', {'proposition': proposition})

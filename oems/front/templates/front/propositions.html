@@ -1,0 +1,43 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<header>
+			<h3>List of propositions:</h3>
+		</header>
+
+		<div class="table-wrapper">
+			{% if propositions %}
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Created on:</th>
+						<th>By user:</th>
+					</tr>
+				</thead>
+
+				<tbody>
+				{% for proposition in propositions %}
+				<tr>
+					<td><a href="{% url 'front:proposition' proposition.pk %}">{{ proposition.pk }}</a></td>
+					<td>{{ proposition.date_created }}</td>
+					<td>{{ proposition.user }}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			{% else %}
+				Sorry, no propositions available.
+			{% endif %}
+		</div>
+
+		<div class="align-right">
+			<a href="{% url 'front:proposition_creation' %}" class="button">Propose</a>
+		</div>
+	</div>
+</section>
+
+{% endblock %}
