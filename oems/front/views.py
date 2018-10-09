@@ -207,7 +207,7 @@ def create_proposition(request):
             proposition = form.save(commit=False)
             proposition.user = request.user
             proposition.save()
-            return redirect('front:proposition', kwargs={'pk': proposition.pk})
+            return redirect('front:proposition', pk=proposition.pk)
     else:
         form = forms.PropositionForm()
 
