@@ -11,6 +11,7 @@ from front.tests import utils
 class MathematicalObjectsTests(TestCase):
 
     def test_show_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
         to_show = views.PAGINATION_SIZE // 2
         object_ids = []
         for _ in range(to_show):
@@ -25,6 +26,7 @@ class MathematicalObjectsTests(TestCase):
             self.assertContains(response, reverse('front:mathematical_object', kwargs={'pk': object_id}))
 
     def test_spread_on_several_pages(self):
+        utils.log_as(self, utils.UserType.STAFF)
         number_of_mathematical_objects = views.PAGINATION_SIZE * 3 + views.PAGINATION_SIZE // 2
         mathematical_objects = [utils.create_mathematical_object(self) for _ in range(number_of_mathematical_objects)]
 
@@ -33,3 +35,14 @@ class MathematicalObjectsTests(TestCase):
 
             for m in mathematical_objects[i * views.PAGINATION_SIZE:min((i + 1) * views.PAGINATION_SIZE, number_of_mathematical_objects)]:
                 self.assertContains(response, reverse('front:mathematical_object', kwargs={'pk': m.pk}))
+
+    def test_search_entries(self):
+        utils.log_as(self, utils.UserType.STAFF)
+        query_latex = 'ax + b'
+        other_latex = 'ax + \\sin(b)'
+
+        utils.create_mathematical_object(self, with_latex=query_latex)
+        utils.create_mathematical_object(self, with_latex=other_latex)
+
+        utils.log_as(self, utils.UserType.VISITOR)
+        response = self.client.get(reverse('front:mathematical_objects') + "?q={}".format(query_latex))

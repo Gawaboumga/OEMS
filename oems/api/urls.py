@@ -1,5 +1,7 @@
 from django.urls import path
-
+from django.conf import settings
+from api.LatexFinder import LatexFinder
+import os
 from api import ajax, views
 
 app_name = 'api'
@@ -21,3 +23,13 @@ urlpatterns = [
     path('function-autocomplete/', ajax.FunctionAutocomplete.as_view(), name='function-autocomplete'),
     path('name-autocomplete/', ajax.NameAutocomplete.as_view(), name='name-autocomplete'),
 ]
+
+
+def one_time_startup():
+    query_file_name = 'db'
+    path = os.path.join(settings.MEDIA_ROOT, 'latex_query', query_file_name)
+    latex_finder = LatexFinder()
+    latex_finder.load(path)
+
+
+one_time_startup()

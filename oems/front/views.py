@@ -11,6 +11,8 @@ from front import forms
 PAGINATION_SIZE = 25
 
 
+@login_required
+@permission_required('api.add_mathematicalobject', raise_exception=True)
 def create_mathematical_object(request):
     if request.method == 'POST':
         mathematical_object_form = forms.MathematicalObjectForm(request.POST)
@@ -22,6 +24,8 @@ def create_mathematical_object(request):
     return render(request, "front/mathematical_object_creation.html", {'form': mathematical_object_form})
 
 
+@login_required
+@permission_required('api.change_mathematicalobject', raise_exception=True)
 def edit_mathematical_object(request, pk):
     mathematical_object_instance = get_object_or_404(models.MathematicalObject, pk=pk)
     if request.method == 'POST':
@@ -51,7 +55,10 @@ def edit_mathematical_object_description(request, pk):
 
 def index(request):
     number_series = models.MathematicalObject.objects.count()
-    return render(request, "front/index.html", {'number_series': number_series})
+    form = forms.QueryForm()
+    form.fields['q'].widget.attrs['placeholder'] = 'Type any series or product in LaTeX !'
+    form.fields['q'].label = ''
+    return render(request, "front/index.html", {'number_series': number_series, 'form': form})
 
 
 class FunctionListView(generic.ListView):
@@ -62,7 +69,10 @@ class FunctionListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = forms.QueryForm()
+        form = forms.QueryForm()
+        form.fields['q'].widget.attrs['placeholder'] = 'Type any function !'
+        form.fields['q'].label = ''
+        context['form'] = form
         return context
 
     def get_queryset(self):
@@ -87,13 +97,23 @@ class MathematicalObjectListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = forms.QueryForm()
+        form = forms.QueryForm()
+        form.fields['q'].widget.attrs['placeholder'] = 'Type any series or product in LaTeX !'
+        form.fields['q'].label = ''
+        context['form'] = form
         return context
 
     def get_queryset(self):
         query = self.request.GET.get('q', None)
         if query:
-            return super().get_queryset().filter(latex__icontains=query)
+            results = LatexFinder.LatexFinder().search(query)
+            results = list(map(lambda x: x[0], results))
+            clauses = ' '.join(['WHEN id=%s THEN %s' % (pk, i) for i, pk in enumerate(results)])
+            ordering = 'CASE %s END' % clauses
+            queryset = super().get_queryset().filter(pk__in=results).extra(
+                select={'ordering': ordering}, order_by=('ordering',))
+
+            return queryset
         return super().get_queryset()
 
 
@@ -103,34 +123,43 @@ class MathematicalObjectDetailView(generic.DetailView):
     context_object_name = 'mathematical_object'
 
 
-class ModificationListView(generic.ListView):
+class ModificationListView(PermissionRequiredMixin, generic.ListView):
     model = models.Modification
     ordering = 'date_created'
     template_name = 'front/modifications.html'
     context_object_name = 'modifications'
+    permission_required = ('api.delete_modification',)
     paginate_by = PAGINATION_SIZE
 
 
-class ModificationDetailView(generic.DetailView):
-    model = models.Modification
-    template_name = 'front/modification.html'
-    context_object_name = 'modification'
+@login_required
+def modification_detail(request, pk):
+    modification = get_object_or_404(models.Modification, pk=pk)
 
-    def post(self, request, *args, **kwargs):
+    if not (request.user.has_perm('api.delete_proposition') or request.user == modification.user):
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
         if request.POST.get('accept_modification'):
-            accepted_modification = self.get_object()
+            if not request.user.has_perm('api.delete_proposition'):
+                return HttpResponseForbidden()
+
+            accepted_modification = modification
             mathematical_object = accepted_modification.mathematical_object
             mathematical_object.save_content(accepted_modification.get_content())
             accepted_modification.new_description.delete()
             accepted_modification.delete()
             return redirect('front:mathematical_object', pk=mathematical_object.pk)
         elif request.POST.get('reject_modification'):
-            rejected_modification = self.get_object()
+            rejected_modification = modification
             rejected_modification.new_description.delete()
             rejected_modification.delete()
-            return redirect('front:modifications')
-
-        return self.get(request, args, kwargs)
+            if request.user.has_perm('api.delete_proposition'):
+                return redirect('front:modifications')
+            else:
+                return redirect('front:mathematical_object', pk=modification.mathematical_object.pk)
+    else:
+        return render(request, 'front/modification.html', {'modification': modification})
 
 
 class NameListView(generic.ListView):
@@ -142,7 +171,10 @@ class NameListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = forms.QueryForm()
+        form = forms.QueryForm()
+        form.fields['q'].widget.attrs['placeholder'] = 'Type a name !'
+        form.fields['q'].label = ''
+        context['form'] = form
         return context
 
     def get_queryset(self):

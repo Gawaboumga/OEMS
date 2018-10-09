@@ -10,8 +10,28 @@ from front.tests import utils
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class MathematicalObjectCreationTests(TestCase):
 
+    def test_view_mathematical_object_creation_as_staff(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
+        response = self.client.get(reverse('front:mathematical_object_creation'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_view_mathematical_object_creation_as_non_staff(self):
+        utils.log_as(self, utils.UserType.USER)
+
+        url_asked = reverse('front:mathematical_object_creation')
+        response = self.client.get(url_asked)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        utils.log_as(self, utils.UserType.VISITOR)
+
+        response = self.client.get(url_asked)
+        self.assertRedirects(response, reverse('login') + '?next={}'.format(url_asked))
+
     def test_create_small_mathematical_object(self):
-        representation = 'test_create_small_mathematical_object'
+        utils.log_as(self, utils.UserType.STAFF)
+
+        representation = 'testcreatesmallmathematicalobject'
         type2 = 'S'
 
         mathematical_object_form = forms.MathematicalObjectForm(data={
@@ -28,9 +48,10 @@ class MathematicalObjectCreationTests(TestCase):
         self.assertEqual(created_object.type, type2)
 
     def test_create_partial_mathematical_object_with_function(self):
+        utils.log_as(self, utils.UserType.STAFF)
         func = utils.create_function(self)
 
-        representation = 'test_create_partial_mathematical_object_with_function'
+        representation = 'testcreatepartialmathematicalobjectwithfunction'
         type2 = 'S'
 
         mathematical_object_form = forms.MathematicalObjectForm(data={
@@ -52,9 +73,10 @@ class MathematicalObjectCreationTests(TestCase):
         self.assertEqual(created_object.names.count(), 0)
 
     def test_create_partial_mathematical_object_with_name(self):
+        utils.log_as(self, utils.UserType.STAFF)
         name = utils.create_name(self)
 
-        representation = 'test_create_partial_mathematical_object_with_name'
+        representation = 'testcreatepartialmathematicalobjectwithname'
         type2 = 'S'
 
         mathematical_object_form = forms.MathematicalObjectForm(data={
@@ -76,9 +98,10 @@ class MathematicalObjectCreationTests(TestCase):
         self.assertEqual(created_object.functions.count(), 0)
 
     def test_create_partial_mathematical_object_with_related(self):
+        utils.log_as(self, utils.UserType.STAFF)
         mathematical_object_1 = utils.create_mathematical_object(self, with_name=True, with_function=True)
 
-        representation = 'test_create_full_mathematical_object'
+        representation = 'testcreatefullmathematicalobject'
         type2 = 'S'
 
         mathematical_object_form = forms.MathematicalObjectForm(data={
@@ -99,11 +122,12 @@ class MathematicalObjectCreationTests(TestCase):
         self.assertEqual(result.latex, representation)
 
     def test_create_full_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
         func = utils.create_function(self)
         name = utils.create_name(self)
         mathematical_object_1 = utils.create_mathematical_object(self)
 
-        representation = 'test_create_full_mathematical_object'
+        representation = 'testcreatefullmathematicalobject'
         object_type = 'S'
         description = 'test_create_full_mathematical_object'
 

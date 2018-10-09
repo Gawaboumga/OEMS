@@ -52,7 +52,7 @@ def add_relation(self, object_pk, other_pk):
 
 
 def create_mathematical_object(self, with_function=False, with_name=False, description=None):
-    representation = 'create_mathematical_object' + get_random_characters()
+    representation = 'cmathobj{}'.format(get_random_characters())
     type = 'S'
 
     data = {

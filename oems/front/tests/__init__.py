@@ -1,5 +1,6 @@
 
 from front.tests.functions import *
+from front.tests.mathematical_object import *
 from front.tests.mathematical_object_creation import *
 from front.tests.mathematical_object_description_edition import *
 from front.tests.mathematical_object_edition import *

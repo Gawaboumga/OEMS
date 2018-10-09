@@ -103,7 +103,7 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(name, retrieved_name.name)
 
     def test_create_mathematical_object_with_description(self):
-        representation = 'test_create_mathematical_object_with_description'
+        representation = 'testcreatemathematicalobjectwithdescription'
         type = 'S'
         description = 'test_create_mathematical_object_with_description'
 
