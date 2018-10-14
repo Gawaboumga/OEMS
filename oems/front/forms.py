@@ -1,7 +1,7 @@
 from django import forms
 from django.core.files.base import ContentFile
 
-from api import models
+from api import models, validators
 from front import widgets
 from dal import autocomplete
 from pagedown.widgets import PagedownWidget
@@ -29,6 +29,10 @@ class MathematicalObjectForm(forms.ModelForm):
         self.fields['related'].required = False
         self.fields['functions'].required = False
         self.fields['names'].required = False
+
+    def clean(self):
+        super().clean()
+        validators.validate_latex(self.cleaned_data.get('latex'))
 
     def save(self):
         super().save()

@@ -46,3 +46,16 @@ class MathematicalObjectsTests(TestCase):
 
         utils.log_as(self, utils.UserType.VISITOR)
         response = self.client.get(reverse('front:mathematical_objects') + "?q={}".format(query_latex))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_search_entries_with_invalid_latex(self):
+        utils.log_as(self, utils.UserType.STAFF)
+        query_latex = 'ax + b'
+        other_latex = 'ax + \\sin(b)'
+
+        utils.create_mathematical_object(self, with_latex=query_latex)
+        utils.create_mathematical_object(self, with_latex=other_latex)
+
+        utils.log_as(self, utils.UserType.VISITOR)
+        response = self.client.get(reverse('front:mathematical_objects') + "?q={}".format('^'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -106,6 +106,11 @@ class MathematicalObjectListView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get('q', None)
         if query:
+            try:
+                LatexFinder.LatexFinder().is_valid(query)
+            except Exception:
+                return super().get_queryset()
+
             results = LatexFinder.LatexFinder().search(query)
             results = list(map(lambda x: x[0], results))
             clauses = ' '.join(['WHEN id=%s THEN %s' % (pk, i) for i, pk in enumerate(results)])

@@ -23,6 +23,9 @@ class LatexFinder:
     def add(self, pk: int, latex: str):
         LatexFinder.search_query.add(pk, latex)
 
+    def is_valid(self, latex: str):
+        LatexFinder.search_query.is_valid(latex)
+
     def load(self, path: str):
         LatexFinder.search_query = search.SearchQuery(path=path)
 

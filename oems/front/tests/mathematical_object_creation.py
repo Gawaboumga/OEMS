@@ -147,3 +147,18 @@ class MathematicalObjectCreationTests(TestCase):
 
         mathematical_object_2 = models.MathematicalObject.objects.exclude(pk=mathematical_object_1.id)[:1].get()
         self.assertEqual(mathematical_object_2.get_content(), description)
+
+    def test_create_mathematical_object_with_invalid_latex(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
+        representation = '^'
+
+        mathematical_object_form = forms.MathematicalObjectForm(data={
+            'latex': representation,
+            'type': 'S'
+        })
+        self.assertFalse(mathematical_object_form.is_valid())
+        response = self.client.post(reverse('front:mathematical_object_creation'), data=mathematical_object_form.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(models.MathematicalObject.objects.count(), 0)
