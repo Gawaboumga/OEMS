@@ -32,12 +32,16 @@ class MathematicalObjectDetailTests(APITestCase):
         type = 'S'
         function = 'function'
         name = 'name'
+        tag = 'tag'
+        convergence_radius = '|z < 1|'
 
         data = {
             'latex': representation,
             'type': type,
             'functions': [{'function': function}],
-            'names': [{'name': name}]
+            'names': [{'name': name}],
+            'tags': [{'tag': tag}],
+            'convergence_radius': convergence_radius
         }
 
         response = self.client.post(reverse('api:mathematical_objects'), data, format='json')
@@ -50,6 +54,8 @@ class MathematicalObjectDetailTests(APITestCase):
         self.assertEqual(type, response_data['type'])
         self.assertEqual(function, response_data['functions'][0]['function'])
         self.assertEqual(name, response_data['names'][0]['name'])
+        self.assertEqual(tag, response_data['tags'][0]['tag'])
+        self.assertEqual(convergence_radius, response_data['convergence_radius'])
 
     def test_put_small_mathematical_object(self):
         representation = 'test'
@@ -76,12 +82,16 @@ class MathematicalObjectDetailTests(APITestCase):
         type = 'S'
         function = 'function'
         name = 'name'
+        tag = 'tag'
+        convergence_radius = '|z < 1|'
 
         data = {
             'latex': representation,
             'type': type,
             'functions': [{'function': function}],
-            'names': [{'name': name}]
+            'names': [{'name': name}],
+            'tags': [{'tag': tag}],
+            'convergence_radius': convergence_radius
         }
 
         response = self.client.post(reverse('api:mathematical_objects'), data, format='json')

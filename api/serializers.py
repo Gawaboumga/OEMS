@@ -2,8 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from api.models import Function, MathematicalObject, Name
-from api.model_config import *
+from api.models import Function, MathematicalObject, Name, Tag
 
 
 class FunctionSerializer(serializers.ModelSerializer):
@@ -22,6 +21,12 @@ class NameSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
 class FunctionMathematicalObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Function
@@ -36,9 +41,17 @@ class NameMathematicalObjectSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class TagMathematicalObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('tag', )
+        depth = 1
+
+
 class MathematicalObjectSerializer(serializers.ModelSerializer):
     functions = FunctionMathematicalObjectSerializer(many=True, required=False)
     names = NameMathematicalObjectSerializer(many=True, required=False)
+    tags = TagMathematicalObjectSerializer(many=True, required=False)
     description = serializers.CharField(required=False)
 
     class Meta:
@@ -54,24 +67,27 @@ class MathematicalObjectSerializer(serializers.ModelSerializer):
         related = validated_data.pop('related', [])
         functions = validated_data.pop('functions', [])
         names = validated_data.pop('names', [])
+        tags = validated_data.pop('tags', [])
         description = validated_data.pop('description', None)
         mathematical_object = MathematicalObject.objects.create(**validated_data)
         for function in functions:
             mathematical_object.functions.create(**function)
         for name in names:
             mathematical_object.names.create(**name)
+        for tag in tags:
+            mathematical_object.tags.create(**tag)
         for relation in related:
             mathematical_instance = MathematicalObject.objects.get(pk=relation)
             mathematical_object.related.add(mathematical_instance)
         if description:
-            description_file = ContentFile(description)
-            mathematical_object.description.save(str(mathematical_object.pk), description_file, save=True)
+            mathematical_object.save_content(description)
         mathematical_object.save()
         return mathematical_object
 
     def update(self, instance, validated_data):
         instance.latex = validated_data.get('latex', instance.latex)
         instance.type = validated_data.get('type', instance.type)
+        instance.convergence_radius = validated_data.get('convergence_radius', instance.convergence_radius)
         return instance
 
     def to_representation(self, instance):

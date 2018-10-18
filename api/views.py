@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
-from api.models import Function, Name, MathematicalObject
-from api.serializers import FunctionSerializer, NameSerializer, MathematicalObjectSerializer, MathematicalObjectIdSerializer, UserSerializer, GroupSerializer
+from api.models import Function, Name, Tag, MathematicalObject
+from api.serializers import *
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 
@@ -75,6 +75,42 @@ class NameDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Dest
     def delete(self, request, pk, format=None):
         name_object = get_object_or_404(Name, pk=pk)
         name_object.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TagList(generics.ListCreateAPIView):
+    """
+    List all tags, or create a new tag.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+
+class TagDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    """
+    Retrieve, update or delete a tag instance.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+    def get(self, request, pk, format=None):
+        tag_object = get_object_or_404(Tag, pk=pk)
+        results = MathematicalObject.objects.filter(tags=tag_object)
+        serializer = MathematicalObjectIdSerializer(results, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        tag_object = get_object_or_404(Tag, pk=pk)
+        serializer = TagSerializer(tag_object, data=request.data)
+        if serializer.is_valid():
+            new_name = serializer.save()
+            new_name.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        tag_object = get_object_or_404(Tag, pk=pk)
+        tag_object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -201,6 +237,43 @@ class MathematicalObjectRelatedDetail(mixins.DestroyModelMixin, generics.Generic
         mathematical_object = get_object_or_404(MathematicalObject, pk=object_pk)
         other_mathematical_object = get_object_or_404(MathematicalObject, pk=other_pk)
         mathematical_object.related.remove(other_mathematical_object)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MathematicalObjectTagList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    """
+    List all names liked to a mathematical object, or add a new name to a mathematical object.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+    def get(self, request, object_pk, format=None):
+        mathematical_object = get_object_or_404(MathematicalObject, pk=object_pk)
+        serializer = TagSerializer(mathematical_object.tags, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, object_pk, format=None):
+        mathematical_object = get_object_or_404(MathematicalObject, pk=object_pk)
+        serializer = TagSerializer(data=request.data)
+        if serializer.is_valid():
+            mathematical_object.tags.add(serializer.save())
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MathematicalObjectTagDetail(mixins.DestroyModelMixin, generics.GenericAPIView):
+    """
+    Retrieve, update or delete a name linked to mathematical objects.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+    def delete(self, request, object_pk, tag_pk, format=None):
+        mathematical_object = get_object_or_404(MathematicalObject, pk=object_pk)
+        tag_object = get_object_or_404(Tag, pk=tag_pk)
+        mathematical_object.tags.remove(tag_object)
+        if Tag.objects.filter(mathematicalobject=mathematical_object).count() == 0:
+            tag_object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

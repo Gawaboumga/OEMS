@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 
-from api.models import Function, MathematicalObject, Name, User
+from api.models import Function, MathematicalObject, Name, Tag, User
 
 import random
 import string
@@ -42,6 +42,21 @@ def add_name(self, object_pk, default_name=None):
     return Name.objects.get(pk=response.data['id'])
 
 
+def add_tag(self, object_pk, default_tag=None):
+    if default_tag is None:
+        tag_data = {
+            'tag': 'add_tag' + get_random_characters()
+        }
+    else:
+        tag_data = {
+            'tag': default_tag
+        }
+
+    response = self.client.post(reverse('api:mathematical_object_tags', kwargs={'object_pk': object_pk}), tag_data, format='json')
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    return Tag.objects.get(pk=response.data['id'])
+
+
 def add_relation(self, object_pk, other_pk):
     relation_data = {
         'id': other_pk
@@ -51,7 +66,7 @@ def add_relation(self, object_pk, other_pk):
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
-def create_mathematical_object(self, with_function=False, with_name=False, description=None):
+def create_mathematical_object(self, with_function=False, with_name=False, with_tag=False, description=None):
     representation = 'cmathobj{}'.format(get_random_characters())
     type = 'S'
 
@@ -66,6 +81,9 @@ def create_mathematical_object(self, with_function=False, with_name=False, descr
     if with_name:
         name = 'name' + get_random_characters()
         data.update({'names': [{'name': name}]})
+    if with_tag:
+        tag = 'tag' + get_random_characters()
+        data.update({'tags': [{'tag': tag}]})
     if description:
         data.update({'description': description})
 

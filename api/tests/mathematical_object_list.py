@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from django.test import override_settings
 from django.urls import reverse
 from oems.settings import TEST_MEDIA_ROOT
-from api.models import Function, MathematicalObject, Name
+from api.models import Function, MathematicalObject, Name, Tag
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
@@ -79,12 +79,16 @@ class MathematicalObjectListTests(APITestCase):
         type = 'S'
         function = 'function'
         name = 'name'
+        tag = 'tag'
+        convergence_radius = '|z < 1|'
 
         data = {
             'latex': representation,
             'type': type,
             'functions': [{'function': function}],
-            'names': [{'name': name}]
+            'names': [{'name': name}],
+            'tags': [{'tag': tag}],
+            'convergence_radius': convergence_radius
         }
 
         response = self.client.post(reverse('api:mathematical_objects'), data, format='json')
@@ -93,6 +97,7 @@ class MathematicalObjectListTests(APITestCase):
         response_data = response.data
         self.assertEqual(representation, response_data['latex'])
         self.assertEqual(type, response_data['type'])
+        self.assertEqual(convergence_radius, response_data['convergence_radius'])
 
         mathematical_object = MathematicalObject.objects.get(pk=response_data['id'])
         self.assertEqual(mathematical_object.functions.count(), 1)
@@ -101,6 +106,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(function, retrieved_function.function)
         retrieved_name = Name.objects.get(id__in=mathematical_object.names.all())
         self.assertEqual(name, retrieved_name.name)
+        retrieved_tag = Tag.objects.get(id__in=mathematical_object.tags.all())
+        self.assertEqual(tag, retrieved_tag.tag)
 
     def test_create_mathematical_object_with_description(self):
         representation = 'testcreatemathematicalobjectwithdescription'

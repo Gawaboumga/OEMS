@@ -30,12 +30,21 @@ class Name(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    tag = models.CharField(max_length=TAG_REPRESENTATION_MAX_LENGTH)
+
+    def __str__(self):
+        return self.tag
+
+
 class MathematicalObject(models.Model):
     latex = models.CharField(max_length=MATHEMATICAL_OBJECT_REPRESENTATION_MAX_LENGTH)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     related = models.ManyToManyField('self')
     functions = models.ManyToManyField(Function)
     names = models.ManyToManyField(Name)
+    tags = models.ManyToManyField(Tag)
+    convergence_radius = models.CharField(max_length=MATHEMATICAL_OBJECT_CONVERGENCE_RADIUS_MAX_LENGTH, blank=True)
     description = models.FileField(upload_to='mathematical_objects/', blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -107,13 +116,13 @@ class Modification(models.Model):
             raise e
 
 
-class Proposition(models.Model):
-    content = models.TextField(max_length=PROPOSITION_REPRESENTATION_MAX_LENGTH)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_created = models.DateField(auto_now=True)
-
-
 @receiver(post_delete, sender=Modification)
 def delete_description_pre_delete_modification(sender, instance, *args, **kwargs):
     if instance.new_description:
         _delete_file(instance.new_description.path)
+
+
+class Proposition(models.Model):
+    content = models.TextField(max_length=PROPOSITION_REPRESENTATION_MAX_LENGTH)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateField(auto_now=True)

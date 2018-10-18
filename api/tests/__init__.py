@@ -9,6 +9,10 @@ from api.tests.mathematical_object_name_detail import *
 from api.tests.mathematical_object_name_list import *
 from api.tests.mathematical_object_related_detail import *
 from api.tests.mathematical_object_related_list import *
+from api.tests.mathematical_object_tag_detail import *
+from api.tests.mathematical_object_tag_list import *
 from api.tests.models import *
 from api.tests.name_detail import *
 from api.tests.name_list import *
+from api.tests.tag_detail import *
+from api.tests.tag_list import *
