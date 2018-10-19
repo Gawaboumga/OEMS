@@ -39,7 +39,21 @@
 				<p>
 					Associated functions:
 					{% for function in mathematical_object.functions.all %}
-						<a href="{% url 'front:function' function.id %}">\( {{function.function}} \)</a>
+						<a href="{% url 'front:function' function.id %}">\( {{ function.function }} \)</a>
+						{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</p>
+			</div>
+		</div>
+		{% endif %}
+
+		{% if mathematical_object.tags %}
+		<div class="row">
+			<div class="12u">
+				<p>
+					Associated tags:
+					{% for tag in mathematical_object.tags.all %}
+						<a href="{% url 'front:tag' tag.id %}">{{ tag.tag }}</a>
 						{% if not forloop.last %}, {% endif %}
 					{% endfor %}
 				</p>
@@ -53,7 +67,7 @@
 				<p>
 					Related objects:
 					{% for related_object in mathematical_object.related.all %}
-						<a href="{% url 'front:mathematical_object' related_object.id %}">\( {{related_object.latex}} \)</a>
+						<a href="{% url 'front:mathematical_object' related_object.id %}">\( {{ related_object.latex }} \)</a>
 						{% if not forloop.last %}, {% endif %}
 					{% endfor %}
 				</p>

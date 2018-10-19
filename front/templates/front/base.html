@@ -34,6 +34,7 @@
                     <a href="{% url 'front:mathematical_objects' %}">Objects</a>
                     <a href="{% url 'front:functions' %}">Functions</a>
                     <a href="{% url 'front:names' %}">Names</a>
+                    <a href="{% url 'front:tags' %}">Tags</a>
                     {% if user.is_authenticated %}
                         {% if perms.api.delete_modification %}
                             <a href="{% url 'front:modifications' %}">Modifications</a>
@@ -43,9 +44,9 @@
                         {% else %}
                             <a href="{% url 'front:proposition_creation' %}">Propose</a>
                         {% endif %}
-                        <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+                        <a href="{% url 'logout'%}?next={{ request.path }}">Logout</a>
                     {% else %}
-                        <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+                        <a href="{% url 'login'%}?next={{ request.path }}">Login</a>
                     {% endif %}
                 </nav>
                 <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>

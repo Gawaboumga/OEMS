@@ -9,6 +9,8 @@ from front.tests import utils
 class NamesTests(TestCase):
 
     def test_spread_on_several_pages(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         number_of_names = views.PAGINATION_SIZE * 3 + views.PAGINATION_SIZE // 2
         names = self.__create_names(number_of_names)
 

@@ -1,0 +1,50 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section id="main" class="wrapper">
+	<div class="inner">
+		<form action="" method="get">
+			<div class="row uniform">
+				<div class="2u"></div>
+				<div class="8u align-center">
+					{{ form.as_p }}
+					<ul class="actions">
+						<li><input type="submit" value="Search" class="button special" /></li>
+					</ul>
+				</div>
+				<div class="2u"></div>
+			</div>
+		</form>
+
+		<header>
+			<h3>List of tags:</h3>
+		</header>
+
+		<div class="table-wrapper">
+			{% if tags %}
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Tag name</th>
+					</tr>
+				</thead>
+
+				<tbody>
+				{% for tag in tags %}
+					<tr>
+						<td><a href="{% url 'front:tag' tag.pk %}">{{ tag.pk }}</a></td>
+						<td>{{ tag.tag }}</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			{% else %}
+				Sorry, no tags available.
+			{% endif %}
+		</div>
+	</div>
+</section>
+
+{% endblock %}

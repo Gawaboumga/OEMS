@@ -21,7 +21,8 @@ class MathematicalObjectForm(forms.ModelForm):
         widgets = {
             'latex': widgets.LatexInput(),
             'functions': autocomplete.ModelSelect2Multiple(url='api:function-autocomplete'),
-            'names': autocomplete.ModelSelect2Multiple(url='api:name-autocomplete')
+            'names': autocomplete.ModelSelect2Multiple(url='api:name-autocomplete'),
+            'tags': autocomplete.ModelSelect2Multiple(url='api:tag-autocomplete'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -29,6 +30,7 @@ class MathematicalObjectForm(forms.ModelForm):
         self.fields['related'].required = False
         self.fields['functions'].required = False
         self.fields['names'].required = False
+        self.fields['tags'].required = False
 
     def clean(self):
         super().clean()

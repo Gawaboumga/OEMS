@@ -20,4 +20,6 @@ urlpatterns = [
     path('propositions/', views.PropositionListView.as_view(), name='propositions'),
     path('proposition_creation/', views.create_proposition, name='proposition_creation'),
     path('proposition/<int:pk>/', views.proposition_detail, name='proposition'),
+    path('tags/', views.TagListView.as_view(), name='tags'),
+    path('tags/<int:pk>', views.TagDetailView.as_view(), name='tag'),
 ]

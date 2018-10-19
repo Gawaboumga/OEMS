@@ -104,6 +104,24 @@ def create_name(self, object_pk=None, name=None):
     return models.Name.objects.get(pk=response.data['id'])
 
 
+def create_tag(self, object_pk=None, tag=None):
+    if tag is None:
+        tag_data = {
+            'tag': 'create_tag' + get_random_characters()
+        }
+    else:
+        tag_data = {
+            'tag': tag
+        }
+
+    if object_pk:
+        response = self.client.post(reverse('api:mathematical_object_tagss', kwargs={'object_pk': object_pk}), tag_data, format='json')
+    else:
+        response = self.client.post(reverse('api:tags'), tag_data, format='json')
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    return models.Tag.objects.get(pk=response.data['id'])
+
+
 def create_proposition(self, by_user, content: str=None):
     if content is None:
         content = get_random_characters()
@@ -135,6 +153,18 @@ def log_as(self, user_type: UserType):
         change_mathematical_object = Permission.objects.get(codename='change_mathematicalobject')
         delete_mathematical_object = Permission.objects.get(codename='delete_mathematicalobject')
 
+        add_function_object = Permission.objects.get(codename='add_function')
+        change_function_object = Permission.objects.get(codename='change_function')
+        delete_function_object = Permission.objects.get(codename='delete_function')
+
+        add_name_object = Permission.objects.get(codename='add_name')
+        change_name_object = Permission.objects.get(codename='change_name')
+        delete_name_object = Permission.objects.get(codename='delete_name')
+
+        add_tag_object = Permission.objects.get(codename='add_tag')
+        change_tag_object = Permission.objects.get(codename='change_tag')
+        delete_tag_object = Permission.objects.get(codename='delete_tag')
+
         add_modification = Permission.objects.get(codename='add_modification')
         change_modification = Permission.objects.get(codename='change_modification')
         delete_modification = Permission.objects.get(codename='delete_modification')
@@ -142,6 +172,9 @@ def log_as(self, user_type: UserType):
         delete_proposition = Permission.objects.get(codename='delete_proposition')
 
         user.user_permissions.add(add_mathematical_object, change_mathematical_object, delete_mathematical_object,
+                                  add_function_object, change_function_object, delete_function_object,
+                                  add_name_object, change_name_object, delete_name_object,
+                                  add_tag_object, change_tag_object, delete_tag_object,
                                   add_modification, change_modification, delete_modification, delete_proposition)
         user.save()
 

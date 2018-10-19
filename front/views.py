@@ -195,6 +195,34 @@ class NameDetailView(generic.DetailView):
     context_object_name = 'name'
 
 
+class TagListView(generic.ListView):
+    model = models.Tag
+    ordering = 'tag'
+    template_name = 'front/tags.html'
+    context_object_name = 'tags'
+    paginate_by = PAGINATION_SIZE
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = forms.QueryForm()
+        form.fields['q'].widget.attrs['placeholder'] = 'Type a tag !'
+        form.fields['q'].label = ''
+        context['form'] = form
+        return context
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', None)
+        if query:
+            return super().get_queryset().filter(tag__icontains=query)
+        return super().get_queryset()
+
+
+class TagDetailView(generic.DetailView):
+    model = models.Tag
+    template_name = 'front/tag.html'
+    context_object_name = 'tag'
+
+
 class PropositionListView(PermissionRequiredMixin, generic.ListView):
     model = models.Proposition
     ordering = 'date_created'

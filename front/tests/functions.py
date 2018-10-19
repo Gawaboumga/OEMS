@@ -9,6 +9,8 @@ from front.tests import utils
 class FunctionsTests(TestCase):
 
     def test_spread_on_several_pages(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         number_of_functions = views.PAGINATION_SIZE * 3 + views.PAGINATION_SIZE // 2
         functions = self.__create_functions(number_of_functions)
 
