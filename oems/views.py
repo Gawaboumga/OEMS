@@ -1,6 +1,18 @@
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+
+
+@login_required
+@require_POST
+def create_token(request):
+    Token.objects.get_or_create(user=request.user)
+    return HttpResponse(status=status.HTTP_200_OK)
 
 
 def signup(request):

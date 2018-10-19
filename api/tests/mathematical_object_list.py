@@ -2,14 +2,17 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.test import override_settings
 from django.urls import reverse
-from oems.settings import TEST_MEDIA_ROOT
+from oems.settings import PAGINATION_SIZE, TEST_MEDIA_ROOT
 from api.models import Function, MathematicalObject, Name, Tag
+from api.tests import utils
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class MathematicalObjectListTests(APITestCase):
 
     def test_create_small_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
 
@@ -29,6 +32,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(mathematical_object.names.count(), 0)
 
     def test_create_partial_mathematical_object_with_function(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
         function = 'function'
@@ -52,6 +57,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(mathematical_object.names.count(), 0)
 
     def test_create_partial_mathematical_object_with_name(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
         name = 'name'
@@ -75,6 +82,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(name, retrieved_name.name)
 
     def test_create_full_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
         function = 'function'
@@ -110,6 +119,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(tag, retrieved_tag.tag)
 
     def test_create_mathematical_object_with_description(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'testcreatemathematicalobjectwithdescription'
         type = 'S'
         description = 'test_create_mathematical_object_with_description'
@@ -132,6 +143,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(mathematical_object.names.count(), 0)
 
     def test_create_invalid_type_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'BUG'
         function = 'function'
@@ -149,6 +162,8 @@ class MathematicalObjectListTests(APITestCase):
         self.assertEqual(MathematicalObject.objects.count(), 0)
 
     def test_get_mathematical_objects(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation_1 = 'test'
         type_1 = 'S'
         function_1 = 'function'
@@ -183,10 +198,12 @@ class MathematicalObjectListTests(APITestCase):
 
         response = self.client.get(reverse('api:mathematical_objects'), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
 
     def test_get_paginated_mathematical_objects(self):
-        number_of_objects_to_create = 50
+        utils.log_as(self, utils.UserType.STAFF)
+
+        number_of_objects_to_create = PAGINATION_SIZE + 5
         for i in range(number_of_objects_to_create):
             representation = 'test'
             type = 'S'
@@ -207,4 +224,4 @@ class MathematicalObjectListTests(APITestCase):
         response = self.client.get(reverse('api:mathematical_objects'), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MathematicalObject.objects.count(), number_of_objects_to_create)
-        self.assertEqual(len(response.data), number_of_objects_to_create)
+        self.assertEqual(len(response.data['results']), PAGINATION_SIZE)

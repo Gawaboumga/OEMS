@@ -11,6 +11,8 @@ from api.tests import utils
 class MathematicalObjectRelatedDetailTests(APITestCase):
 
     def test_retrieve_specific_relation(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object_1 = utils.create_mathematical_object(self)
         mathematical_object_2 = utils.create_mathematical_object(self)
         utils.add_relation(self, mathematical_object_1.id, mathematical_object_2.id)

@@ -14,28 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
-from django.conf import settings
-from django.conf.urls import url, include
+from django.urls import path
+from rest_framework.authtoken import views
+from django.conf.urls import include
 
-from . import views
+from oems.views import create_token, signup
 
 
 urlpatterns = [
     path('', include('front.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('api/', include('api.urls')),
+    path('api/v1/', include('api.urls')),
+    path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),
+    path('api-token-create/', create_token, name='api-token-create'),
     path('admin/', admin.site.urls),
-    path('accounts/registration/', views.signup),
+    path('accounts/registration/', signup),
 ]
-
-"""if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-
-        # For django versions before 2.0:
-        # url(r'^__debug__/', include(debug_toolbar.urls)),
-
-    ] + urlpatterns
-"""

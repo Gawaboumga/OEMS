@@ -57,11 +57,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'pagedown',
     'pymatex',
-    #'debug_toolbar'
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,6 +92,20 @@ INTERNAL_IPS = '127.0.0.1'
 
 WSGI_APPLICATION = 'oems.wsgi.application'
 
+PAGINATION_SIZE = 25
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissions',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': PAGINATION_SIZE,
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

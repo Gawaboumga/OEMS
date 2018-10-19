@@ -4,12 +4,15 @@ from django.test import override_settings
 from django.urls import reverse
 from oems.settings import TEST_MEDIA_ROOT
 from api.models import MathematicalObject
+from api.tests import utils
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class MathematicalObjectDetailTests(APITestCase):
 
     def test_retrieve_small_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
 
@@ -28,6 +31,8 @@ class MathematicalObjectDetailTests(APITestCase):
         self.assertEqual(type, response_data['type'])
 
     def test_retrieve_full_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
         function = 'function'
@@ -58,6 +63,8 @@ class MathematicalObjectDetailTests(APITestCase):
         self.assertEqual(convergence_radius, response_data['convergence_radius'])
 
     def test_put_small_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
 
@@ -78,6 +85,8 @@ class MathematicalObjectDetailTests(APITestCase):
         self.assertEqual(new_type, response_data['type'])
 
     def test_delete_full_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         representation = 'test'
         type = 'S'
         function = 'function'

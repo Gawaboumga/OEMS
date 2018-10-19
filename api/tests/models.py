@@ -8,6 +8,8 @@ from api.tests import utils
 class ModelsTests(APITestCase):
 
     def test_add_description_to_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self)
         self.assertFalse(bool(mathematical_object.description))
 
@@ -17,6 +19,8 @@ class ModelsTests(APITestCase):
         self.assertEqual(mathematical_object.get_content(), content)
 
     def test_replace_description_of_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         old_content = 'old_content'
         mathematical_object = utils.create_mathematical_object(self, description=old_content)
         self.assertTrue(bool(mathematical_object.description))
@@ -28,6 +32,8 @@ class ModelsTests(APITestCase):
         self.assertEqual(mathematical_object.get_content(), content)
 
     def test_automatically_delete_description_of_mathematical_object(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self, description='Test')
 
         self.assertTrue(utils.is_file(mathematical_object.description.path))

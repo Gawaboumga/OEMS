@@ -11,15 +11,37 @@ from api.tests import utils
 class MathematicalObjectNameListTests(APITestCase):
 
     def test_add_name(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self)
 
         name = 'test_add_name'
-        name_object = utils.add_name(self, mathematical_object.id, default_name=name)
+        data = {
+            'name': name
+        }
+
+        response = self.client.post(reverse('api:mathematical_object_names', kwargs={'object_pk': mathematical_object.id}), data=data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        name_object = Name.objects.get(pk=response.data['id'])
         self.assertEqual(Name.objects.count(), 1)
         self.assertEqual(name_object.name, name)
         self.assertEqual(len(mathematical_object.names.all()), 1)
 
+        utils.log_as(self, utils.UserType.USER)
+        response = self.client.post(
+            reverse('api:mathematical_object_names', kwargs={'object_pk': mathematical_object.id}), data=data,
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        utils.log_as(self, utils.UserType.VISITOR)
+        response = self.client.post(
+            reverse('api:mathematical_object_names', kwargs={'object_pk': mathematical_object.id}), data=data,
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_add_another_name(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self, with_name=True)
 
         name = 'test_add_another_name'
@@ -29,6 +51,8 @@ class MathematicalObjectNameListTests(APITestCase):
         self.assertEqual(len(mathematical_object.names.all()), 2)
 
     def test_get_names(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self, with_name=True)
         name_object_1 = utils.add_name(self, mathematical_object.id)
         name_object_2 = utils.add_name(self, mathematical_object.id)

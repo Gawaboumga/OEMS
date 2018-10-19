@@ -10,15 +10,17 @@ from api.tests import utils
 class AjaxTests(APITestCase):
 
     def test_retrieve_function_not_connected(self):
+        utils.log_as(self, utils.UserType.STAFF)
         mathematical_object = utils.create_mathematical_object(self)
         function_object = utils.add_function(self, mathematical_object.id,
                                              function_name='test_retrieve_function' + utils.get_random_characters())
 
+        utils.log_as(self, utils.UserType.VISITOR)
         response = self.client.get(reverse('api:function-autocomplete'), format='json')
         self.assertNotContains(response, function_object.function)
 
     def test_retrieve_function(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         mathematical_object = utils.create_mathematical_object(self)
         function_object = utils.add_function(self, mathematical_object.id, function_name='test_retrieve_function' + utils.get_random_characters())
@@ -27,7 +29,7 @@ class AjaxTests(APITestCase):
         self.assertContains(response, function_object.function)
 
     def test_retrieve_multiple_functions(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_functions = 3
 
@@ -39,7 +41,7 @@ class AjaxTests(APITestCase):
             self.assertContains(response, function_object.function)
 
     def test_retrieve_only_part_of_functions(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_functions = 3
 
@@ -64,14 +66,16 @@ class AjaxTests(APITestCase):
             self.assertContains(response, function_object.function)
 
     def test_retrieve_name_not_connected(self):
+        utils.log_as(self, utils.UserType.STAFF)
         mathematical_object = utils.create_mathematical_object(self)
         name_object = utils.add_name(self, mathematical_object.id, default_name='test_retrieve_name_not_connected' + utils.get_random_characters())
 
+        utils.log_as(self, utils.UserType.VISITOR)
         response = self.client.get(reverse('api:name-autocomplete'), format='json')
         self.assertNotContains(response, name_object.name)
 
     def test_retrieve_name(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         mathematical_object = utils.create_mathematical_object(self)
         name_object = utils.add_name(self, mathematical_object.id, default_name='test_retrieve_name' + utils.get_random_characters())
@@ -80,7 +84,7 @@ class AjaxTests(APITestCase):
         self.assertContains(response, name_object.name)
 
     def test_retrieve_multiple_names(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_names = 3
 
@@ -92,7 +96,7 @@ class AjaxTests(APITestCase):
             self.assertContains(response, name_object.name)
 
     def test_retrieve_only_part_of_names(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_names = 3
 
@@ -118,14 +122,16 @@ class AjaxTests(APITestCase):
             self.assertContains(response, name_object.name)
 
     def test_retrieve_tag_not_connected(self):
+        utils.log_as(self, utils.UserType.STAFF)
         mathematical_object = utils.create_mathematical_object(self)
         tag_object = utils.add_tag(self, mathematical_object.id, default_tag='test_retrieve_tag_not_connected' + utils.get_random_characters())
 
+        utils.log_as(self, utils.UserType.VISITOR)
         response = self.client.get(reverse('api:tag-autocomplete'), format='json')
         self.assertNotContains(response, tag_object.tag)
 
     def test_retrieve_tag(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         mathematical_object = utils.create_mathematical_object(self)
         tag_object = utils.add_tag(self, mathematical_object.id, default_tag='test_retrieve_tag' + utils.get_random_characters())
@@ -134,7 +140,7 @@ class AjaxTests(APITestCase):
         self.assertContains(response, tag_object.tag)
 
     def test_retrieve_multiple_tags(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_tags = 3
 
@@ -146,7 +152,7 @@ class AjaxTests(APITestCase):
             self.assertContains(response, tag_object.tag)
 
     def test_retrieve_only_part_of_tags(self):
-        utils.login(self)
+        utils.log_as(self, utils.UserType.STAFF)
 
         number_of_tags = 3
 

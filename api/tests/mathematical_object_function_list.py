@@ -11,15 +11,37 @@ from api.tests import utils
 class MathematicalObjectFunctionListTests(APITestCase):
 
     def test_add_function(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self)
 
         function = 'test_add_function'
-        function_object = utils.add_function(self, mathematical_object.id, function_name=function)
+        data = {
+            'function': function
+        }
+
+        response = self.client.post(reverse('api:mathematical_object_functions', kwargs={'object_pk': mathematical_object.id}), data=data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        function_object = Function.objects.get(pk=response.data['id'])
         self.assertEqual(Function.objects.count(), 1)
         self.assertEqual(function_object.function, function)
         self.assertEqual(len(mathematical_object.functions.all()), 1)
 
+        utils.log_as(self, utils.UserType.USER)
+        response = self.client.post(
+            reverse('api:mathematical_object_functions', kwargs={'object_pk': mathematical_object.id}), data=data,
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        utils.log_as(self, utils.UserType.VISITOR)
+        response = self.client.post(
+            reverse('api:mathematical_object_functions', kwargs={'object_pk': mathematical_object.id}), data=data,
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_add_another_function(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self, with_function=True)
 
         function = 'test_add_another_function'
@@ -29,6 +51,8 @@ class MathematicalObjectFunctionListTests(APITestCase):
         self.assertEqual(len(mathematical_object.functions.all()), 2)
 
     def test_get_functions(self):
+        utils.log_as(self, utils.UserType.STAFF)
+
         mathematical_object = utils.create_mathematical_object(self, with_function=True)
         function_object_1 = utils.add_function(self, mathematical_object.id)
         function_object_2 = utils.add_function(self, mathematical_object.id)
