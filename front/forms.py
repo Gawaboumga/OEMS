@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from api import models, validators
 from front import widgets
 from dal import autocomplete
-from pagedown.widgets import PagedownWidget
+from markdownx.widgets import MarkdownxWidget
 
 
 class QueryForm(forms.Form):
@@ -12,7 +12,7 @@ class QueryForm(forms.Form):
 
 
 class MathematicalObjectForm(forms.ModelForm):
-    description = forms.CharField(required=False, widget=PagedownWidget(attrs={'onkeyup': 'MathJax.Hub.Queue(["Typeset", MathJax.Hub])'}))
+    description = forms.CharField(required=False, widget=MarkdownxWidget(attrs={'onkeyup': 'MathJax.Hub.Queue(["Typeset", MathJax.Hub])'}))
 
     class Meta:
         model = models.MathematicalObject
@@ -46,7 +46,7 @@ class MathematicalObjectForm(forms.ModelForm):
 
 
 class ModificationForm(forms.Form):
-    new_description = forms.CharField(required=True, widget=PagedownWidget(attrs={'onkeyup': 'MathJax.Hub.Queue(["Typeset", MathJax.Hub])'}))
+    new_description = forms.CharField(required=True, widget=MarkdownxWidget(attrs={'onkeyup': 'MathJax.Hub.Queue(["Typeset", MathJax.Hub])'}))
 
     def save(self, mathematical_object, user):
         new_description_instance = models.Modification.objects.create(

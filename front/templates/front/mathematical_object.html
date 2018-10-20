@@ -1,4 +1,5 @@
 {% extends "front/base.html" %}
+{% load front_filters %}
 
 {% block content %}
 
@@ -79,8 +80,9 @@
 		{% if mathematical_object.description %}
 		<div class="row">
 			<div class="12u">
+
 				<div class="box">
-					{{ mathematical_object.get_content }}
+					{{ mathematical_object.get_content|show_markdown|safe }}
 				</div>
 			</div>
 		</div>

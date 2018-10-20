@@ -1,4 +1,5 @@
 {% extends "front/base.html" %}
+{% load front_filters %}
 
 {% block content %}
 
@@ -13,7 +14,7 @@
 				<h2>Old content:</h2>
 				{% if modification.mathematical_object.get_content %}
 					<div class="box">
-						{{ modification.mathematical_object.get_content }}
+						{{ modification.mathematical_object.get_content|show_markdown|safe }}
 					</div>
 				{% else %}
 					<p>Content was empty.</p>
@@ -25,7 +26,7 @@
 			<section class="12u">
 				<h2>New content:</h2>
 				<div class="box">
-					{{ modification.get_content }}
+					{{ modification.get_content|show_markdown|safe }}
 				</div>
 			</section>
 		</div>
