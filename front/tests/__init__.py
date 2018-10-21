@@ -11,3 +11,4 @@ from front.tests.names import *
 from front.tests.proposition import *
 from front.tests.proposition_creation import *
 from front.tests.propositions import *
+from front.tests.tags import *

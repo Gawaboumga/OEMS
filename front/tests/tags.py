@@ -21,4 +21,4 @@ class TagsTests(TestCase):
                 self.assertContains(response, reverse('front:tag', kwargs={'pk': f.pk}))
 
     def __create_tags(self, number_of_tags):
-        return sorted([utils.create_tag(self) for _ in range(number_of_tags)], key=lambda x: x.id)
+        return sorted([utils.create_tag(self) for _ in range(number_of_tags)], key=lambda x: x.tag.lower())
