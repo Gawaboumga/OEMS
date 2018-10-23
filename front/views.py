@@ -8,6 +8,8 @@ from api import models, LatexFinder
 from front import forms
 
 
+NUMBER_OF_SIMULTANEOUS_MODIFICATIONS_PER_USER = 5
+NUMBER_OF_SIMULTANEOUS_PROPOSITIONS_PER_USER = 5
 PAGINATION_SIZE = 25
 
 
@@ -44,8 +46,11 @@ def edit_mathematical_object_description(request, pk):
     if request.method == 'POST':
         modification_form = forms.ModificationForm(request.POST)
         if modification_form.is_valid():
-            new_modification = modification_form.save(mathematical_object_instance, request.user)
-            return redirect('front:modification', pk=new_modification.pk)
+            if models.Modification.objects.filter(user=request.user).count() < NUMBER_OF_SIMULTANEOUS_PROPOSITIONS_PER_USER:
+                new_modification = modification_form.save(mathematical_object_instance, request.user)
+                return redirect('front:modification', pk=new_modification.pk)
+            else:
+                modification_form.add_error(None, "You have already made too many modifications for the moment, please wait for a staff member to handle your requests.")
     else:
         modification_form = forms.ModificationForm(initial={
             'new_description': mathematical_object_instance.get_content()
@@ -237,10 +242,13 @@ def create_proposition(request):
     if request.method == 'POST':
         form = forms.PropositionForm(request.POST)
         if form.is_valid():
-            proposition = form.save(commit=False)
-            proposition.user = request.user
-            proposition.save()
-            return redirect('front:proposition', pk=proposition.pk)
+            if models.Proposition.objects.filter(user=request.user).count() < NUMBER_OF_SIMULTANEOUS_PROPOSITIONS_PER_USER:
+                proposition = form.save(commit=False)
+                proposition.user = request.user
+                proposition.save()
+                return redirect('front:proposition', pk=proposition.pk)
+            else:
+                form.add_error(None, "You have already made too many proposals for the moment, please wait for a staff member to handle your requests.")
     else:
         form = forms.PropositionForm()
 

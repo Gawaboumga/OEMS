@@ -4,6 +4,7 @@ from rest_framework import status
 from oems.settings import TEST_MEDIA_ROOT
 from api import models
 from front import forms
+from front.views import NUMBER_OF_SIMULTANEOUS_MODIFICATIONS_PER_USER
 from front.tests import utils
 
 
@@ -86,3 +87,22 @@ class MathematicalObjectDescriptionEditionTests(TestCase):
         self.assertEqual(created_modification.get_content(), new_description)
         mathematical_object.refresh_from_db()
         self.assertEqual(mathematical_object.get_content(), old_description)
+
+    def test_user_can_not_edit_more_than_k_modifications(self):
+        utils.log_as(self, utils.UserType.STAFF)
+        mathematical_object = utils.create_mathematical_object(self)
+
+        for _ in range(NUMBER_OF_SIMULTANEOUS_MODIFICATIONS_PER_USER):
+            response = self.client.post(
+                reverse('front:mathematical_object_description_edition', kwargs={'pk': mathematical_object.pk}),
+                data={'new_description': 'test_user_can_not_edit_more_than_k_modifications'}, format='json')
+            self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        self.assertEqual(models.Modification.objects.count(), NUMBER_OF_SIMULTANEOUS_MODIFICATIONS_PER_USER)
+
+        response = self.client.post(
+            reverse('front:mathematical_object_description_edition', kwargs={'pk': mathematical_object.pk}),
+            data={'new_description': 'test_user_can_not_edit_more_than_k_modifications'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "error")
+        self.assertEqual(models.Modification.objects.count(), NUMBER_OF_SIMULTANEOUS_MODIFICATIONS_PER_USER)
