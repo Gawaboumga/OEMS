@@ -18,13 +18,13 @@ from django.urls import path
 from rest_framework.authtoken import views
 from django.conf.urls import include
 
-from oems.views import create_token, signup
+from oems.views import create_token
 
 
 urlpatterns = [
     path('', include('front.urls')),
+    path('accounts/', include('django_registration.backends.activation.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/registration/', signup, name='registration'),
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
     path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),

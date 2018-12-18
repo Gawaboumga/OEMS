@@ -1,0 +1,13 @@
+How to set up the server:
+
+1) Connect in sFTP to the instance
+2) Create a symlink between a root file called "wsgi.py" pointing to the one in oems
+3) Add the website url to the ALLOWED_HOSTS
+4) Send the (real) "secrets.py" file to the server
+5) Create the database ("python manage.py migrate") while commenting consistency checks in api.urls
+6) Add folders mathematical_objects/, modifications/ and static/
+7) Add the static_root pointer to the static folder (complete path)
+8) Create superadmin ?
+9) Apply the "python manage.py check --deploy"
+10) Notably disable debug and activate commented stuffs at the end of settings
+11) Check mail
