@@ -24,7 +24,7 @@ from oems.views import create_token, signup
 urlpatterns = [
     path('', include('front.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/registration/', signup),
+    path('accounts/registration/', signup, name='registration'),
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
     path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),
