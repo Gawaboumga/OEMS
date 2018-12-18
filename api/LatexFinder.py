@@ -16,6 +16,7 @@ class LatexFinder:
     def __init__(self):
         if not LatexFinder.instance:
             LatexFinder.instance = LatexFinder.__LatexFinder()
+            LatexFinder.search_query = search.SearchQuery()
 
     def __getattr__(self, name):
         return getattr(self.instance, name)

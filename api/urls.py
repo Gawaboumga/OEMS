@@ -1,6 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from api.LatexFinder import LatexFinder
+import logging
 import os
 from api import ajax, models, views
 
@@ -39,11 +40,57 @@ urlpatterns = [
 ]
 
 
-def one_time_startup():
-    query_file_name = 'db'
-    path = os.path.join(settings.MEDIA_ROOT, 'latex_query', query_file_name)
+def check_consistency(logger, objects, field, folder):
+    existing = set()
+    pointed = set()
+    missing = []
+
+    for object in objects:
+        if field(object):
+            path = field(object).name
+            if os.path.isfile(path):
+                pointed.add(path)
+            else:
+                missing.append(path)
+
+    path = os.path.join(settings.MEDIA_ROOT, folder)
+    for file in os.listdir(path):
+        existing.add(os.path.join(settings.MEDIA_ROOT, folder, file))
+
+    for m in missing:
+        logger.error(f"Missing file: {m}")
+
+    for m in existing.difference(pointed):
+        logger.error(f"Existing file: {m} but not pointed by any")
+
+    for m in pointed.difference(existing):
+        logger.error(f"Pointed file: {m} but not existing")
+
+
+def check_consistency_mathematical_objects(logger):
+    check_consistency(logger, models.MathematicalObject.objects.all(), lambda x: x.description, 'mathematical_objects/')
+
+
+def check_consistency_modifications(logger):
+    check_consistency(logger, models.Modification.objects.all(), lambda x: x.new_description, 'modifications/')
+
+
+def create_query_latex(logger):
     latex_finder = LatexFinder()
-    latex_finder.load(path)
+    for mathematical_object in models.MathematicalObject.objects.all():
+        latex_finder.add(mathematical_object.pk, mathematical_object.latex)
+    return latex_finder
+
+
+def one_time_startup():
+    logger = logging.getLogger(__name__)
+
+    check_consistency_mathematical_objects(logger)
+    check_consistency_modifications(logger)
+
+    create_query_latex(logger)
+
+
 
 
 one_time_startup()
