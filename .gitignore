@@ -114,3 +114,5 @@ front/static/front/index.html
 test_media_root/
 htmlcov/
 .coverage
+oems/secrets - Copie.py
+oems/settings - Copie.py
