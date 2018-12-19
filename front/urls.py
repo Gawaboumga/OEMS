@@ -6,6 +6,7 @@ app_name = 'front'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('about/', views.about, name='about'),
     path('functions/', views.FunctionListView.as_view(), name='functions'),
     path('functions/<int:pk>', views.FunctionDetailView.as_view(), name='function'),
     path('names/', views.NameListView.as_view(), name='names'),

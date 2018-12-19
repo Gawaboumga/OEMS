@@ -13,6 +13,10 @@ NUMBER_OF_SIMULTANEOUS_PROPOSITIONS_PER_USER = 5
 PAGINATION_SIZE = 25
 
 
+def about(request):
+    return render(request, "front/about.html")
+
+
 @login_required
 @permission_required('api.add_mathematicalobject', raise_exception=True)
 def create_mathematical_object(request):

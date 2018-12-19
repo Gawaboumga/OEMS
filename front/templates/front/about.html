@@ -1,0 +1,53 @@
+{% extends "front/base.html" %}
+
+{% block content %}
+
+<section class="wrapper">
+	<div class="inner">
+		<header class="align-center">
+            <h1>About the Online Encyclopedia of Mathematical Series</h1>
+		</header>
+
+		<div class="row">
+            <section>
+                <h3>Why this website ?</h3>
+                <p>I realized that there were no real tools to research these mathematical forms. So I wanted to fill this gap by drawing inspiration from the excellent site of N. J. A. Sloane: <a href="https://oeis.org/">The On-Line Encyclopedia of Integer Sequences</a></p>
+            </section>
+
+            <section>
+                <h3>What can you do ?</h3>
+                <p>You can search according to 4 criteria:</p>
+                <ol>
+                    <li>The objects themselves by writing a formula in the form of latex. We will try to provide those with the closest structure possible.</li>
+                    <li>The function is related to a general mathematical expression that is associated with the object and written in latex.</li>
+                    <li>The names are the common ones associated with the formula.</li>
+                    <li>The tag refers to the family to which the object belongs.</li>
+                </ol>
+            </section>
+
+            <section>
+                <h3>What can you specifically do ?</h3>
+                <p>The possibilities offered by the website vary according to your status.</p>
+                <h4>As a visitor:</h4>
+                <p>You can freely consult the information available on this website but you will not be able to make any changes or suggest improvements.</p>
+                <h4>As a user:</h4>
+                <p>Once connected, you will be able to propose improvements and modifications to the text associated with each object. All changes will first be checked by team members to ensure that the content respects the spirit of the site. You can contact me if you wish to unregister.</p>
+                <h4>As a staff member:</h4>
+                <p>Staff members can accept or reject changes proposed by users. They can also modify the other elements attached to the objects or the text directly without passing a third party verification. It is a status reserved for serious people.</p>
+            </section>
+
+            <section>
+                <h3>REST API ?</h3>
+                <p>This website also offers an API REST that is intended for consultation only. This is more for computer scientists. It is available through the root: <a href="{% url 'api:mathematical_objects' %}">/api/v1/</a>, one may find more information on the associated github.
+                </p>
+            </section>
+
+            <section>
+                <h3>It's ugly and it's buggy !</h3>
+                <p>I know ^^, you can always help me on the github.</p>
+            </section>
+        </div>
+	</div>
+</section>
+
+{% endblock %}
