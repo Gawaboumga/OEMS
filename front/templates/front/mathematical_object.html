@@ -16,6 +16,8 @@
 				<h2>Series #{{ mathematical_object.id }}</h2>
 			{% elif mathematical_object.type == 'P' %}
 				<h2>Euler product #{{ mathematical_object.id }}</h2>
+			{% elif mathematical_object.type == 'K' %}
+				<h2>Continued fraction #{{ mathematical_object.id }}</h2>
 			{% endif %}
 			<p>\( {{ mathematical_object.latex }} \)</p>
 		</header>
